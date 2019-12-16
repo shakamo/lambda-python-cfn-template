@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  serverless
+
+  Sample SAM Template for serverless
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 30
+  Api:
+    Cors:
+      AllowMethods: "'OPTIONS,POST,GET'"
+      AllowHeaders: "'Content-Type'"
+      AllowOrigin: "'*'"
+
+Resources:
+  ApiResource:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+
+  GetAddressFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: rec-digi-get-address
+      CodeUri: handlers/get_address
+      Handler: get_address.lambda_handler
+      Role: arn:aws:iam::000000000000:role/AWSServiceEditorRole
+      Runtime: python3.7
+      Events:
+        SubmitContract:
+          Type: Api
+          Properties:
+            Path: /address/search
+            Method: get
+            RestApiId: !Ref ApiResource
